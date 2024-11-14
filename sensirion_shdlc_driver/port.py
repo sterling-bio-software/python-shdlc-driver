@@ -120,7 +120,7 @@ class ShdlcSerialPort(ShdlcPort):
     """
 
     def __init__(self, port, baudrate, additional_response_time=0.1,
-                 do_open=True):
+                 do_open=True, rs485_settings=None):
         """
         Create and optionally open a serial port. Throws an exception if the
         port cannot be opened.
@@ -137,6 +137,9 @@ class ShdlcSerialPort(ShdlcPort):
             If ``False``, you will have to call
             :py:meth:`~sensirion_shdlc_driver.port.ShdlcSerialPort.open`
             manually before using this object. Defaults to ``True``.
+        :param rs485_settings:
+            Optional RS485 settings. If not ``None``, it must be a
+            :py:class:`~serial.rs485.RS485Settings` object.
         """
         super(ShdlcSerialPort, self).__init__()
         log.debug("Open ShdlcSerialPort on '{}' with {} bit/s."
@@ -148,6 +151,8 @@ class ShdlcSerialPort(ShdlcPort):
                                      parity=serial.PARITY_NONE,
                                      stopbits=serial.STOPBITS_ONE,
                                      timeout=0.01, xonxoff=False)
+        if rs485_settings is not None:
+            self._serial.rs485_mode=rs485_settings
         self._serial.port = port
         if do_open:
             self.open()
